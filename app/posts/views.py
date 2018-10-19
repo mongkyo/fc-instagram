@@ -1,5 +1,6 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 
+from members.models import User
 from .models import Post
 
 
@@ -35,4 +36,13 @@ def post_create(request):
     # 3. render를 적절히 사용해서 해당 템플릿을 return
     # 4. base.html의 nav부분에 '+ Add Post'텍스트를 갖는 a링크 하나 추가,
     #       {% url %} 테그를 사용해서 포스트 생성으로 링크 걸어주기
-    return render(request, 'posts/post_create.html')
+    if request.method == 'POST':
+        # request.FILES에 form에서 보낸 파일 객체가 들어있음
+        # 새로운 post를 생성한다.
+        # author는 User.objects.first()
+        # photo는 request.FILES에 있는 내용을 적절히 꺼내서 쓴다
+        # 완료된 후 posts:post-list로 redirect
+        Post.objects.create(author=User.objects.first(), photo=request.FILES['photo'])
+        return redirect('posts:post-list')
+    else:
+        return render(request, 'posts/post_create.html')
