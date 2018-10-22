@@ -69,6 +69,12 @@ def signup_view(request):
 
     # GET요청시 해당 템플릿 보여주도록 처리
     # base.html에 있는 'Signup'버튼이 이 쪽으로 이동할 수 있도록 url 링크 걸기
+    form = SignupForm
+    error = ''
+    context = {
+        'form': form,
+        'error': error,
+    }
     if request.method == 'POST':
 
         # 1. request.POST에 전달된 username, password1, password2를
@@ -79,14 +85,47 @@ def signup_view(request):
         #      비밀번호와 비밀번호 확인란의 값이 일치하지 않습니다.
         # 3. 위의 두 경우가 아니라면
         #    새 User를 생성, 해당 User로 로그인 시켜준 후 'posts:post-list'로 redirect처리
+
+
+        # 짧게 만들기
+        # render경우
+        # 1. POST요청이며 사용자명이 이미 존재할 경우
+        # 2. POST요청이며 비밀번호가 같지 않은 경우
+        # 3. GET요청인 경우
+        # redirect
+        # 1. POST요청이며 사용자명이 존재하지 않고 비밀번호가 같은 경우
+
+        """
+        if request.method가 POST면:
+            if 사용자명이 존재하면:
+                render1
+            if 비밀번호가 같지 않으면:
+                render2
+            (else, POST이면서 사용자명도 없고 비밀번호도 같으면):
+                return redirect
+        (POST면서 사용자명이 존재하면)
+        (POST면서 비밀번호가 같지 않으면)
+        (POST면서 사용자명이 없고 비밀번호가 같은 경우가 "아니면" -> GET요청도 포함)
+        return render
+        """
         username = request.POST['username']
         password1 = request.POST['password1']
         password2 = request.POST['password2']
-
+        form = SignupForm
         if User.objects.filter(username=username).exists():
-            return HttpResponse(f'사용자명 ({username})은 이미 사용중입니다.')
+            error = f'사용자명 ({username})은 이미 사용중입니다.'
+            context = {
+                'form': form,
+                'error': error,
+            }
+            return render(request, 'members/signup.html', context)
         if password1 != password2:
-            return HttpResponse('비밀번호와 비밀번호 확인란의 값이 일치하지 않습니다.')
+            error = '비밀번호와 비밀번호 확인란의 값이 일치하지 않습니다.'
+            context = {
+                'form': form,
+                'error': error,
+            }
+            return render(request, 'members/signup.html', context)
 
         # create_user메서드는 create와 달리 자동으로 password해싱을 해줌
         user = User.objects.create_user(
