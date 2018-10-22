@@ -1,3 +1,5 @@
+from django.contrib.auth.models import User
+from django.http import HttpResponse
 from django.shortcuts import render, redirect
 
 from .forms import LoginForm, SignupForm
@@ -68,7 +70,31 @@ def signup_view(request):
     # GET요청시 해당 템플릿 보여주도록 처리
     # base.html에 있는 'Signup'버튼이 이 쪽으로 이동할 수 있도록 url 링크 걸기
     if request.method == 'POST':
-        pass
+
+        # 1. request.POST에 전달된 username, password1, password2를
+        #    각각 해당 이름의 변수에 할당
+        # 2-x 에서는 HttpResponse에 문자열로 에러를 리턴해주기
+        #  2-1 username에 해당하는 User가 이미 있다면 사용자명 ({username})은 이미 사용중입니다.
+        #  2-2 password1과 password2가 일치하지 않는다면,
+        #      비밀번호와 비밀번호 확인란의 값이 일치하지 않습니다.
+        # 3. 위의 두 경우가 아니라면
+        #    새 User를 생성, 해당 User로 로그인 시켜준 후 'posts:post-list'로 redirect처리
+        username = request.POST['username']
+        password1 = request.POST['password1']
+        password2 = request.POST['password2']
+
+        if User.objects.filter(username=username).exists():
+            return HttpResponse(f'사용자명 ({username})은 이미 사용중입니다.')
+        if password1 != password2:
+            return HttpResponse('비밀번호와 비밀번호 확인란의 값이 일치하지 않습니다.')
+
+        # create_user메서드는 create와 달리 자동으로 password해싱을 해줌
+        user = User.objects.create_user(
+            username=username,
+            password=password1,
+        )
+        login(request, user)
+        return redirect('posts:post-list')
     else:
         form = SignupForm()
         context = {
