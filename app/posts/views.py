@@ -25,17 +25,9 @@ def post_list(request):
 
 
 def post_create(request):
-    # 1. posts/post_create.html 구현
-    #   form구현
-    #   input[type=file]
-    #   button[type=submit]
-
-    # 2. /posts/create/ URL에 이 view를 연결
-    #    URL명은 'post-create'를 사용
-    # 3. render를 적절히 사용해서 해당 템플릿을 return
-    # 4. base.html의 nav부분에 '+ Add Post'텍스트를 갖는 a링크 하나 추가,
-    #       {% url %} 테그를 사용해서 포스트 생성으로 링크 걸어주기
-
+    # 이 view로 왔는데
+    if not request.user.is_authenticated:
+        return redirect('posts:post-list')
     if request.method == 'POST':
         # request.FILES에 form에서 보낸 파일 객체가 들어있음
         # 새로운 post를 생성한다.
