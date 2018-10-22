@@ -45,7 +45,10 @@
 				<!--로그인 되어있으면 로그아웃버튼, 아니면 로그인/회원가입 버튼 표시-->
 				{% if user.is_authenticated %}
 				<li class="nav-item">
-					<a href="#" class="btn btn-outline-secondary">Logout</a>
+					<form action="{% url 'members:logout' %}" method="POST">
+						{% csrf_token %}
+						<button type="submit" class="btn btn-outline-secondary">Logout</button>
+					</form>
 				</li>
 				{% else %}
 				<li class="nav-item">
