@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 
 from members.models import User
 from .models import Post
-
+from .forms import PostCreateForm
 
 def post_list(request):
     # 1. Post모델에
@@ -36,13 +36,26 @@ def post_create(request):
     # 3. render를 적절히 사용해서 해당 템플릿을 return
     # 4. base.html의 nav부분에 '+ Add Post'텍스트를 갖는 a링크 하나 추가,
     #       {% url %} 테그를 사용해서 포스트 생성으로 링크 걸어주기
+
     if request.method == 'POST':
         # request.FILES에 form에서 보낸 파일 객체가 들어있음
         # 새로운 post를 생성한다.
         # author는 User.objects.first()
         # photo는 request.FILES에 있는 내용을 적절히 꺼내서 쓴다
         # 완료된 후 posts:post-list로 redirect
+
+        # 정답
+        # post = Post(author=User.objects.first(), photo=request.FILES['photo'])
+        # post.save()
+        # return redirect('posts:post-list')
+
         Post.objects.create(author=User.objects.first(), photo=request.FILES['photo'])
         return redirect('posts:post-list')
     else:
-        return render(request, 'posts/post_create.html')
+        # GET요청의 경우, 빈 Form 인스턴스를 context에 담아서 전달
+        # Template에서는 'form'키로 해당 form 인스턴스 속성을 사용가능
+        form = PostCreateForm()
+        context = {
+            'form': form,
+        }
+        return render(request, 'posts/post_create.html', context)
