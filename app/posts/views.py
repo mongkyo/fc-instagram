@@ -1,6 +1,5 @@
 from django.shortcuts import render, redirect
 
-from members.models import User
 from .models import Post
 from .forms import PostCreateForm
 
@@ -45,12 +44,19 @@ def post_create(request):
         # 완료된 후 posts:post-list로 redirect
 
         # 정답
-        # post = Post(author=User.objects.first(), photo=request.FILES['photo'])
-        # post.save()
-        # return redirect('posts:post-list')
-
-        Post.objects.create(author=User.objects.first(), photo=request.FILES['photo'])
+        post = Post(
+            # SessionMiddleware
+            # AuthenticationMiddleware
+            # 를 통해서 request의 user속성에
+            # 해당 사용자 인스턴스가 할당
+            author=request.user,
+            photo=request.FILES['photo'],
+        )
+        post.save()
         return redirect('posts:post-list')
+
+        # Post.objects.create(author=User.objects.first(), photo=request.FILES['photo'])
+        # return redirect('posts:post-list')
     else:
         # GET요청의 경우, 빈 Form 인스턴스를 context에 담아서 전달
         # Template에서는 'form'키로 해당 form 인스턴스 속성을 사용가능
