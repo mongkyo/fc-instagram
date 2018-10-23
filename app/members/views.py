@@ -1,5 +1,5 @@
 from django.contrib.auth.models import User
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, redirect
 
 from .forms import LoginForm, SignupForm
@@ -70,8 +70,6 @@ def signup_view(request):
     # GET요청시 해당 템플릿 보여주도록 처리
     # base.html에 있는 'Signup'버튼이 이 쪽으로 이동할 수 있도록 url 링크 걸기
 
-
-
         # 1. request.POST에 전달된 username, password1, password2를
         #    각각 해당 이름의 변수에 할당
         # 2-x 에서는 HttpResponse에 문자열로 에러를 리턴해주기
@@ -102,27 +100,26 @@ def signup_view(request):
         # (POST면서 비밀번호가 같지 않으면)
         # (POST면서 사용자명이 없고 비밀번호가 같은 경우가 "아니면" -> GET요청도 포함)
         # return render
-        #
-    context = {
-        'form': SignupForm(),
-    }
+    context = {}
 
     if request.method == 'POST':
-        username = request.POST['username']
-        password1 = request.POST['password1']
-        password2 = request.POST['password2']
-
-        if User.objects.filter(username=username).exists():
-            context['error'] = f'사용자명 ({username})은 이미 사용중입니다.'
-
-        elif password1 != password2:
-            context['error'] = '비밀번호와 비밀번호 확인란의 값이 일치하지 않습니다.'
-        else:
-            # create_user메서드는 create와 달리 자동으로 password해싱을 해줌
+        # POST로 전달된 데이터를 확인
+        # 올바르다면 User를 생성하고 post-list화면으로 이동
+        # (is_vaild()가 True면 올바르다고 가정)
+        form = SignupForm(request.POST)
+        if form.is_valid():
             user = User.objects.create_user(
-                username=username,
-                password=password1,
+                username=form.cleaned_data['username'],
+                password=form.cleaned_data['password1'],
             )
             login(request, user)
             return redirect('posts:post-list')
+    # GET요청시 또는 POST로 전달된 데이터가 올바르지 않을 경우
+    # signup.html에
+    #   빈 Form또는 올바르지 않은 데이터에 대한 정보가 포함된 Form을 전달해서
+    #   동적으로 Form을 랜더링
+    else:
+        form = SignupForm()
+
+    context['form'] = form
     return render(request, 'members/signup.html', context)
