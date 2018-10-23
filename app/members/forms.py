@@ -1,4 +1,5 @@
 from django import forms
+from django.contrib.auth.models import User
 
 
 class LoginForm(forms.Form):
@@ -43,3 +44,16 @@ class SignupForm(forms.Form):
             }
         )
     )
+
+    def clean_username(self):
+        data = self.cleaned_data['username']
+        if User.objects.filter(username=data).exist():
+            raise forms.ValidationError(f'이미 사용중인 사용자명입니다.')
+        return data
+
+    def clean(self):
+        super().clean()
+        password1 = self.cleaned_data.get('password1')
+        password2 = self.cleaned_data.get('password2')
+        if password1 != password2:
+            raise forms.VaildationError('비밀번호와 비밀번호 확인란의 값이 일치하지 않습니다.')
