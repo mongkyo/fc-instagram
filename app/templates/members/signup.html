@@ -9,12 +9,22 @@
     <h2 class="text-center">회원가입</h2>
     <form action="" method="POST">
       {% csrf_token %}
+      {% if form.non_field_errors %}
+        {% for error in form.non_field_errors %}
+          <small class="form-text text-muted">{{ error }}</small>
+        {% endfor %}
+      {% endif %}
+
       {% for field in form %}
         <div class="form-group">
             <label for="{{ field.id_for_label }}">
                 {{ field.label }}
             </label>
             {{ field }}
+
+            {% for error in field.errors %}
+            <div class="form-text text-muted">{{ error }}</div>
+            {% endfor %}
         </div>
       {% endfor %}
       <button class="btn btn-lg btn-primary btn-block" type="submit">가입</button>

@@ -108,10 +108,7 @@ def signup_view(request):
         # (is_vaild()가 True면 올바르다고 가정)
         form = SignupForm(request.POST)
         if form.is_valid():
-            user = User.objects.create_user(
-                username=form.cleaned_data['username'],
-                password=form.cleaned_data['password1'],
-            )
+            user = form.save()
             login(request, user)
             return redirect('posts:post-list')
     # GET요청시 또는 POST로 전달된 데이터가 올바르지 않을 경우
