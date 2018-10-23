@@ -23,6 +23,10 @@ MEDIA_ROOT = os.path.join(ROOT_DIR, '.media')
 # FileField, MediaField의 URL이 아래 설정 기준으로 바뀜
 MEDIA_URL = '/media/'
 
+# login_required 데코레이터에 의해
+# 로그인 페이지로 이동해야 할 때, 그 이동할 URL 또는 URL pattern name
+LOGIN_URL = 'members:login'
+
 STATIC_URL = '/static/'
 # 정적파일을 검색할 경로 목록
 # 변수 할당 없이 바로 경로를 입력하여도 작동한다.
