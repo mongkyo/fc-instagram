@@ -1,8 +1,9 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 
-from .models import Post
-from .forms import PostCreateForm
+from .models import Post, Comment
+from .forms import PostCreateForm, CommentCreateForm
+
 
 def post_list(request):
     # 1. Post모델에
@@ -21,6 +22,7 @@ def post_list(request):
     posts = Post.objects.all()
     context = {
         'posts': posts,
+        'comment_form': CommentCreateForm(),
     }
     return render(request, 'posts/post_list.html', context)
 
@@ -52,7 +54,49 @@ def comment_create(request, post_pk):
     :param post_pk:
     :return:
     """
-    context = {}
+
+    # 1. post_pk에 해당하는 Post객체를 가져와 post변수에 할당
+    # 2. request.POST에 전달된 'content'키의 값을 content변수에 할당
+    # 3. Comment생성
+    #     author: 현재 요청의 user
+    #     post: post_pk에 해당하는 Post객체
+    #     content: request.POST로 전달된 'content'키의 값
+    # 4. posts:post-list로 redirect하기
     if request.method == 'POST':
-        pass
-    return redirect('posts:post-list')
+        post = Post.objects.get(pk=post_pk)
+        form = CommentCreateForm(request.POST)
+        if form.is_valid():
+            form.save(
+                post=post,
+                author=request.user,
+            )
+            return redirect('posts:post-list')
+
+        # posts.forms.CommentCreateForm() 을 사용
+
+        # form = CommentForm(request.POST)
+        # if form.is_valid():
+        #    form.save(author=request.user, post=post)
+
+        # content = request.POST['content']
+        # Comment.objects.create(
+        #     author=request.user,
+        #     post=post,
+        #     content=content,
+        # )
+
+
+
+
+
+
+    # 오답
+    # if request.method == 'POST':
+    #     post = Post.objects.filter(pk=post_pk)
+    #     content = request.POST['content']
+    #     Comment.objects.create(
+    #         author=request.POST['username'],
+    #         post=Post.objects.get(post),
+    #         content=request.POST[content.pk]
+    #     )
+    #     return redirect('posts:post-list')
