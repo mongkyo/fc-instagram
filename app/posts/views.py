@@ -1,7 +1,9 @@
+import re
+
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 
-from .models import Post, Comment
+from .models import Post, Comment, HashTag
 from .forms import PostCreateForm, CommentCreateForm, CommentForm, PostForm
 
 
@@ -84,6 +86,17 @@ def comment_create(request, post_pk):
             comment.post = post
             comment.author = request.user
             comment.save()
+
+            # comment가 가진 content속성에서
+            # 해시태그에 해당하는 문자열들을 가져와서
+            # HashTag객체를 가져오거나 생성(get_or_create)
+            # 이후 comment.tags에 해당 객체들을 추가
+
+            # 댓글 저장 후, content에 포함된 HashTag목록을 댓글의 tags속성에 set
+            p = re.compile(r'#(?P<tag>\w+)')
+            tags = [HashTag.objects.get_or_create(name=name)[0]
+                    for name in re.findall(p, comment.content)]
+            comment.tags.set(tags)
             return redirect('posts:post-list')
 
         # posts.forms.CommentCreateForm() 을 사용
