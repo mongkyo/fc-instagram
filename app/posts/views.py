@@ -2,7 +2,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 
 from .models import Post, Comment
-from .forms import PostCreateForm, CommentCreateForm
+from .forms import PostCreateForm, CommentCreateForm, CommentForm, PostForm
 
 
 def post_list(request):
@@ -22,7 +22,7 @@ def post_list(request):
     posts = Post.objects.all()
     context = {
         'posts': posts,
-        'comment_form': CommentCreateForm(),
+        'comment_form': CommentForm(),
     }
     return render(request, 'posts/post_list.html', context)
 
@@ -31,12 +31,22 @@ def post_list(request):
 def post_create(request):
     context = {}
     if request.method == 'POST':
-        form = PostCreateForm(request.POST, request.FILES)
+        form = PostForm(request.POST, request.FILES)
         if form.is_valid():
-            form.save(author=request.user)
+            post = form.save(commit=False)
+            post.author = request.user
+            post.save()
+
+            comment_content = form.cleaned_data['comment']
+            if comment_content:
+                post.comments.create(
+                    author=request.user,
+                    content=comment_content,
+                )
             return redirect('posts:post-list')
+
     else:
-        form = PostCreateForm()
+        form = PostForm()
 
     context['form'] = form
     return render(request, 'posts/post_create.html', context)
@@ -64,12 +74,16 @@ def comment_create(request, post_pk):
     # 4. posts:post-list로 redirect하기
     if request.method == 'POST':
         post = Post.objects.get(pk=post_pk)
-        form = CommentCreateForm(request.POST)
+        form = CommentForm(request.POST)
         if form.is_valid():
-            form.save(
-                post=post,
-                author=request.user,
-            )
+            # form.save(
+            #     post=post,
+            #     author=request.user,
+            # )
+            comment = form.save(commit=False)
+            comment.post = post
+            comment.author = request.user
+            comment.save()
             return redirect('posts:post-list')
 
         # posts.forms.CommentCreateForm() 을 사용
