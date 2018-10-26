@@ -19,7 +19,6 @@
 {#                                        margin-right: 10px;"#}
 {#                                        class="rounded-circle"></a>#}
 {#                </div>#}
-
                 <span>
                     <a href="#">
                         <img src="{{ post.author.img_profile_url }}" style="width: 30px; height: 30px; border-radius: 100%;">
@@ -30,6 +29,16 @@
             <!--Card의 본문 부분-->
             <div class="card-body">
               <img src="{{ post.photo.url }}" class="card-img-top">
+{#                버튼의 텍스트에 현재 user가 이 Post에 좋아요를 누른상태라면 '좋아요해제'출력  #}
+{#                버튼 클릭시 post_like_toggle에서 해당 로직 처리  #}
+                <form action="">
+                    <button class="btn btn-primary" type="submit">좋아요/좋아요해제</button>
+                </form>
+              <div>
+                  <span>좋아하는 사람</span>
+                  <strong>{{ post.like_users.all|join:", " }}</strong>
+              </div>
+
               <ul class="list-unstyled">
                   {% for comment in post.comments.all %}
                   <li>

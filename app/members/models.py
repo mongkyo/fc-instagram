@@ -29,3 +29,7 @@ class User(AbstractUser):
         if self.img_profile:
             return self.img_profile.url
         return static('images/blank_user.png')
+
+    def like_post_toggle(self, post):
+        # 전달받은 post에 대한 like를 Toggle처리
+        pass
