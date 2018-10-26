@@ -43,6 +43,7 @@ def login_view(request):
     context['form'] = form
     return render(request, 'members/login.html', context)
 
+
 def logout_view(request):
     # URL: /members/logout/
     # Template: 없음
@@ -126,7 +127,7 @@ def profile(request):
             form.save()
             # is_valid()를 통과하고 인스턴스 수정이 완료되면
             # messages모듈을 사용해서 템플릿에 수정완료 메시지를 표시
-
+            # https://docs.djangoproject.com/en/2.1/ref/contrib/messages/
     form = UserProfileForm(instance=request.user)
     context = {
         'form': form
