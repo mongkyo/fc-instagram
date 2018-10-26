@@ -93,37 +93,19 @@ def comment_create(request, post_pk):
             # 이후 comment.tags에 해당 객체들을 추가
 
             # 댓글 저장 후, content에 포함된 HashTag목록을 댓글의 tags속성에 set
-            p = re.compile(r'#(?P<tag>\w+)')
-            tags = [HashTag.objects.get_or_create(name=name)[0]
-                    for name in re.findall(p, comment.content)]
-            comment.tags.set(tags)
+
             return redirect('posts:post-list')
 
-        # posts.forms.CommentCreateForm() 을 사용
 
-        # form = CommentForm(request.POST)
-        # if form.is_valid():
-        #    form.save(author=request.user, post=post)
-
-        # content = request.POST['content']
-        # Comment.objects.create(
-        #     author=request.user,
-        #     post=post,
-        #     content=content,
-        # )
+def tag_post_list(request, tag_name):
+    posts = Post.objects.filter(comments__tags__name=tag_name).distinct()
+    context = {
+        'posts': posts,
+    }
+    return render(request, 'posts/tag_post_list.html', context)
 
 
-
-
-
-
-    # 오답
-    # if request.method == 'POST':
-    #     post = Post.objects.filter(pk=post_pk)
-    #     content = request.POST['content']
-    #     Comment.objects.create(
-    #         author=request.POST['username'],
-    #         post=Post.objects.get(post),
-    #         content=request.POST[content.pk]
-    #     )
-    #     return redirect('posts:post-list')
+def tag_search(request):
+    search_keyword = request.GET.get('search_keyword')
+    substituted_keyword = re.sub(r'#|\s+', '', search_keyword)
+    return redirect('tag-post-list', substituted_keyword)
