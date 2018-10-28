@@ -26,6 +26,7 @@ class Post(models.Model):
         related_name='like_posts',
         related_query_name='like_post',
     )
+
     class Meta:
         verbose_name = '포스트'
         verbose_name_plural = f'{verbose_name} 목록'
@@ -84,25 +85,7 @@ class Comment(models.Model):
         save_tags()
     @property
     def html(self):
-        # 자신의 content속성값에서
-        # "#태그명"에 해당하는 문자열을
-        #  아래와 같이 변경
-        #   <a href="/explore/tags/{태그명}>/">#{태그명}</a>
-        # re.sub를 사용
         return self._html
-        # 템플릿에서는 comment.content대신 comment.html을 출력
-
-        # 숙제
-        #  /explore/tags/{태그명}/ URL에서
-        #  해당 태그를 가진 Posttag목록을 보여주는 view, url, template구현
-        #  URL name: tag-post-list
-        #  view:
-        #       tag_post_list(request, tag_name)
-        #  template:
-        #       /posts/tag_post_list.html
-
-        # base.html에 있는 검색창에 값을 입력하고 Enter시 (Submit)
-        #  해당 값을 사용해 위에서 만든 view로 이동
 
 
 class HashTag(models.Model):
