@@ -113,25 +113,10 @@ def tag_search(request):
 
 @login_required
 def post_like(request, post_pk):
-    next_path = request.GET.get('next')
-    post = get_object_or_404(Post, pk=post_pk)
-    user = request.user
-    filtered_like_posts = user.like_posts.filter(pk=post.pk)
-
-    if filtered_like_posts.exists():
-        user.like_posts.remove(post)
-    else:
-        user.like_posts.add(post)
-
-    if next_path:
-        return redirect(next_path)
-    return redirect('posts:post_list', post_pk=post_pk)
 
     # URL: '/posts/<post_pk>/like-toggle/
     # URL Name: 'posts:post-like-toggle'
     # POST method에 대해서만 처리
     # request.user가 post_pk에 해당하는 Post에
     # Like Toggle처리
-    # if request.method == 'POST':
-    #     like_toggle = Post.objects.filter(post_pk=request.user)
     pass

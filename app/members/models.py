@@ -15,12 +15,7 @@ class User(AbstractUser):
         blank=True
     )
     introduce = models.TextField('소개', blank=True)
-    like_posts = models.ManyToManyField(
-        'posts.Post',
-        blank=True,
-        related_name='like_users',
-        related_query_name='like_user',
-    )
+
     def __str__(self):
         return self.username
 

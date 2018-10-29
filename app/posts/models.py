@@ -33,6 +33,7 @@ class Post(models.Model):
         ordering = ['-pk']
 
     def like_toggle(self, user):
+
         # 전달받은 user가 이 Post를 Like한다면 해제
         # 안되어있다면 Like처리
         pass
