@@ -36,7 +36,9 @@ class Post(models.Model):
 
         # 전달받은 user가 이 Post를 Like한다면 해제
         # 안되어있다면 Like처리
-        pass
+        postlike, postlike_created = self.postlike_set.get_or_create(user=user)
+        if not postlike_created:
+            postlike.delete()
 
 
 class Comment(models.Model):
