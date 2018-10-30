@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/2.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/2.1/ref/settings/
 """
-
+import json
 import os
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -17,6 +17,8 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 ROOT_DIR = os.path.dirname(BASE_DIR)
 TEMPLATES_DIR = os.path.join(BASE_DIR, 'templates')
 STATIC_DIR = os.path.join(BASE_DIR, 'static')
+SECRETS_DIR = os.path.join(ROOT_DIR, '.secrets')
+
 # 사용자가 업로드한 파일이 저장될 BASE 디렉토리 (settings.MEDIA_ROOT)
 MEDIA_ROOT = os.path.join(ROOT_DIR, '.media')
 # 유저가 업로드한 파일에 접근하고자 할 때의 prefix URL (settings.MEDIA_URL)
@@ -34,11 +36,17 @@ STATICFILES_DIRS = [
     STATIC_DIR,
 ]
 
+# .secrets/base.json에 있는 내용을 읽어서
+# parsing하여 파이썬 dict객체를 가져와 secrets변수에 할당
+secrets = json.loads(open(os.path.join(SECRETS_DIR, 'base.json')))
+FACEBOOK_APP_ID = secrets['FACEBOOK_APP_ID']
+FACEBOOK_APP_SECRET = secrets['FACEBOOK_APP_SECRET']
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '$z8ia=f$*@$#n9l+oypayir@rc)7g!!7rlhl2hn(6@wzuvixxi'
+SECRET_KEY = secrets['SECRET_KEY']
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
