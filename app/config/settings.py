@@ -28,6 +28,10 @@ MEDIA_URL = '/media/'
 # login_required 데코레이터에 의해
 # 로그인 페이지로 이동해야 할 때, 그 이동할 URL 또는 URL pattern name
 LOGIN_URL = 'members:login'
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+    'members.backends.FacebookBackend',
+]
 
 STATIC_URL = '/static/'
 # 정적파일을 검색할 경로 목록
@@ -38,7 +42,7 @@ STATICFILES_DIRS = [
 
 # .secrets/base.json에 있는 내용을 읽어서
 # parsing하여 파이썬 dict객체를 가져와 secrets변수에 할당
-secrets = json.loads(open(os.path.join(SECRETS_DIR, 'base.json')))
+secrets = json.load(open(os.path.join(SECRETS_DIR, 'base.json')))
 FACEBOOK_APP_ID = secrets['FACEBOOK_APP_ID']
 FACEBOOK_APP_SECRET = secrets['FACEBOOK_APP_SECRET']
 
