@@ -1,5 +1,29 @@
 # Instagram
 
+## Installation
+
+### Requirements
+
+#### Python, packages
+
+
+- Python (3.6)
+```angular2html
+pip install -r requirements.txt
+```
+
+#### Secrets
+`.secrets/base.json`
+
+```angular2html
+json
+{
+  "SECRET_KEY: "<Django SECRET_KEY>",
+  "FACEBOOK_APP_ID": <Facebook APP ID>,
+  "FACEBOOK_APP_SECRET": <Facebook APP Secret>"
+}
+```
+
 인스타그램 만들기
 
 ## 모델
