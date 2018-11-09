@@ -12,7 +12,7 @@ class User(AbstractUser):
     site = models.URLField(
         '사이트',
         max_length=150,
-        blank=True
+        blank=True,
     )
     introduce = models.TextField('소개', blank=True)
 
