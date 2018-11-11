@@ -1,6 +1,6 @@
 from django.urls import path
 
-from . import views
+from . import views, apis
 
 # 중복되는 것을 방지시켜줌
 app_name = 'posts'
@@ -13,4 +13,5 @@ urlpatterns = [
     path('<int:post_pk>/comments/create/', views.comment_create, name='comment-create'),
     path('tag-search/', views.tag_search, name='tag-search'),
     path('<int:post_pk>/like-toggle/', views.post_like_toggle, name='post-like-toggle'),
+    path('api/tag-search/', apis.tag_search, name='api_tag_search'),
 ]
