@@ -1,8 +1,40 @@
 import json
 
-from django.http import HttpResponse
+from django.http import HttpResponse, Http404
+from rest_framework import status, permissions, generics
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
-from .models import HashTag
+from .permissions import IsOwnerOrReadOnly
+from .serializers import PostSerializer
+from .models import HashTag, Post
+
+
+class PostList(generics.ListCreateAPIView):
+    permissions_classes = (
+        permissions.IsAuthenticatedOrReadOnly,
+    )
+    queryset = Post.objects.all()
+    serializer_class = PostSerializer
+
+    def perform_create(self, serializer):
+        serializer.save(author=self.request.user)
+
+
+class PostDetail(generics.RetrieveUpdateDestroyAPIView):
+    permission_classes = (
+        permissions.IsAuthenticatedOrReadOnly,
+    )
+    queryset = Post.objects.all()
+    serializer_class = PostSerializer
+
+
+class PostLikeCreate:
+    pass
+
+
+class PostLikeDelete:
+    pass
 
 
 def tag_search(request):

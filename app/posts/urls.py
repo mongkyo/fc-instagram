@@ -1,9 +1,11 @@
 from django.urls import path
+from rest_framework.urlpatterns import format_suffix_patterns
 
 from . import views, apis
 
 # 중복되는 것을 방지시켜줌
 app_name = 'posts'
+
 
 
 # config.urls에 연결되는 것이기 때문에 / 기호는 뒷쪽에 붙여주어야한다.
@@ -13,5 +15,7 @@ urlpatterns = [
     path('<int:post_pk>/comments/create/', views.comment_create, name='comment-create'),
     path('tag-search/', views.tag_search, name='tag-search'),
     path('<int:post_pk>/like-toggle/', views.post_like_toggle, name='post-like-toggle'),
-    path('api/tag-search/', apis.tag_search, name='api_tag_search'),
+    path('tag-search/', apis.tag_search, name='api_tag_search'),
 ]
+
+

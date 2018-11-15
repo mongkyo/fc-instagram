@@ -23,7 +23,6 @@ class User(AbstractUser):
         verbose_name = '사용자'
         verbose_name_plural = f'{verbose_name} 목록'
 
-
     @property
     def img_profile_url(self):
         if self.img_profile:
