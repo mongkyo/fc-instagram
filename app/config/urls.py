@@ -25,6 +25,8 @@ from posts.views import tag_post_list
 urlpatterns_api = [
     path('posts/', apis.PostList.as_view()),
     path('posts/<int:pk>/', apis.PostDetail.as_view()),
+    path('postlike/', apis.PostLikeCreate.as_view()),
+    path('postlike/<int:pk>/', apis.PostLikeDelete.as_view()),
 ]
 
 

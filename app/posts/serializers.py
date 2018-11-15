@@ -1,22 +1,22 @@
 from rest_framework import serializers
 
 from members.serializers import UserSerializer
-from .models import Post
+from .models import Post, Comment, PostLike
 
 
-class UserSerializer(serializers.Serializer):
-    email = serializers.EmailField()
-    username = serializers.CharField(max_length=100)
-
-
-class CommentSerializer(serializers.Serializer):
-    user = UserSerializer()
-    content = serializers.CharField(max_length=200)
-    created = serializers.DateField()
+class CommentSerializer(serializers.ModelSerializer):
+    author = UserSerializer()
+    class Meta:
+        model = Comment
+        fields = (
+            'author',
+            'content',
+        )
 
 
 class PostSerializer(serializers.ModelSerializer):
-    author = UserSerializer
+    author = UserSerializer()
+    comments = CommentSerializer(many=True)
     class Meta:
         model = Post
         fields = (
@@ -26,7 +26,18 @@ class PostSerializer(serializers.ModelSerializer):
             'created_at',
             'modified_at',
             'like_users',
+            'comments',
         )
         read_only_fields = (
             'author',
+        )
+
+
+class PostLikeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PostLike
+        fields = (
+            'post',
+            'user',
+            'create_at',
         )

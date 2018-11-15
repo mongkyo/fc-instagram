@@ -6,8 +6,8 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from .permissions import IsOwnerOrReadOnly
-from .serializers import PostSerializer
-from .models import HashTag, Post
+from .serializers import PostSerializer, CommentSerializer, PostLikeSerializer
+from .models import HashTag, Post, Comment, PostLike
 
 
 class PostList(generics.ListCreateAPIView):
@@ -29,12 +29,20 @@ class PostDetail(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = PostSerializer
 
 
-class PostLikeCreate:
-    pass
+class PostLikeCreate(generics.ListCreateAPIView):
+    permissions_classes = (
+        permissions.IsAuthenticatedOrReadOnly,
+    )
+    queryset = PostLike.objects.all()
+    serializer_class = PostLikeSerializer
 
 
-class PostLikeDelete:
-    pass
+class PostLikeDelete(generics.DestroyAPIView):
+    permissions_classes = (
+        permissions.IsAuthenticatedOrReadOnly,
+    )
+    queryset = PostLike.objects.all()
+    serializer_class = PostLikeSerializer
 
 
 def tag_search(request):
