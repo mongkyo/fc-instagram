@@ -34,10 +34,15 @@ class PostSerializer(serializers.ModelSerializer):
 
 
 class PostLikeSerializer(serializers.ModelSerializer):
+    user = serializers.HiddenField(
+        default=serializers.CurrentUserDefault(),
+    )
     class Meta:
         model = PostLike
         fields = (
             'post',
             'user',
-            'create_at',
+        )
+        read_only_fields = (
+            'user',
         )
