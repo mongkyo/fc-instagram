@@ -7,9 +7,10 @@ from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .permissions import IsOwnerOrReadOnly
+from posts.permissions import IsUser
 from .serializers import PostSerializer, CommentSerializer, PostLikeSerializer
 from .models import HashTag, Post, Comment, PostLike
+
 
 
 class PostList(generics.ListCreateAPIView):
@@ -31,7 +32,7 @@ class PostDetail(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = PostSerializer
 
 
-class PostLikeCreate(APIView):
+class PostLikeCreateDestroy(APIView):
     permissions = (
         permissions.IsAuthenticated,
     )
@@ -45,6 +46,33 @@ class PostLikeCreate(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, post_pk):
+        post = get_object_or_404(PostLike, pk=post_pk)
+        post_like = get_object_or_404(PostLike, post=post, user=request.user)
+        post_like.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class PostLikeCreateAPIView(generics.CreateAPIView):
+    permission_classes = (
+        permissions.IsAuthenticated,
+    )
+    queryset = PostLike.objects.all()
+    serializer_class = PostLikeSerializer
+
+
+class PostLikeDestroyAPIView(generics.DestroyAPIView):
+    queryset = PostLike.objects.all()
+    serializer_class = PostLikeSerializer
+    permission_classes = (
+        permissions.IsAuthenticated,
+        IsUser,
+    )
+
+
+
+
 
 # class PostLikeCreate(generics.ListCreateAPIView):
 #     permissions_classes = (

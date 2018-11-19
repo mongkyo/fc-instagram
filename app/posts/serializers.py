@@ -15,8 +15,8 @@ class CommentSerializer(serializers.ModelSerializer):
 
 
 class PostSerializer(serializers.ModelSerializer):
-    author = UserSerializer()
-    comments = CommentSerializer(many=True)
+    is_like = serializers.SerializerMethodField()
+
     class Meta:
         model = Post
         fields = (
@@ -24,13 +24,20 @@ class PostSerializer(serializers.ModelSerializer):
             'author',
             'photo',
             'created_at',
-            'modified_at',
-            'like_users',
-            'comments',
+            'is_like',
         )
         read_only_fields = (
             'author',
         )
+    def get_is_like(self, obj):
+        user = self.context['request'].user
+        if user.is_authenticated:
+            try:
+                postlike = obj.postlike_set.get(user=user)
+                return PostLikeSerializer(postlike).data
+            except PostLike.DoesNotExist:
+                return
+
 
 
 class PostLikeSerializer(serializers.ModelSerializer):
@@ -40,9 +47,12 @@ class PostLikeSerializer(serializers.ModelSerializer):
     class Meta:
         model = PostLike
         fields = (
+            'pk',
             'post',
             'user',
+            'create_at',
         )
         read_only_fields = (
             'user',
         )
+
