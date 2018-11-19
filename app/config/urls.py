@@ -22,13 +22,11 @@ from config import settings
 from posts import apis
 from posts.views import tag_post_list
 
-urlpatterns_api = [
-    path('posts/', apis.PostList.as_view()),
-    path('posts/<int:pk>/', apis.PostDetail.as_view()),
-    path('postlike/', apis.PostLikeCreate.as_view()),
-    path('postlike/<int:pk>/', apis.PostLikeDelete.as_view()),
-]
-
+urlpatterns_api = ([
+    path('posts/', apis.PostList.as_view(), name='posts'),
+    path('posts/<int:pk>/', apis.PostDetail.as_view(), name='post-detail'),
+    path('posts/<int:post_pk>/like/', apis.PostLikeCreate.as_view(), name='post-like'),
+], 'api')
 
 urlpatterns = [
     path('', RedirectView.as_view(pattern_name='posts:post-list'), name='index'),
