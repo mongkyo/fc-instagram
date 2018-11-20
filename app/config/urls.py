@@ -19,23 +19,30 @@ from django.urls import path, include
 from django.views.generic import RedirectView
 
 from config import settings
-from posts import apis
+from posts import apis as posts_apis
 from posts.views import tag_post_list
-
+from members import apis as members_apis
 
 
 urlpatterns_api_posts = ([
-    path('post/', apis.PostList.as_view(), name='posts'),
-    path('post/<int:pk>/', apis.PostDetail.as_view(), name='post-detail'),
-    path('post/<int:post_pk>/like/', apis.PostLikeCreateDestroy.as_view(), name='post-like'),
+    path('post/', posts_apis.PostList.as_view(), name='posts'),
+    path('post/<int:pk>/', posts_apis.PostDetail.as_view(), name='post-detail'),
+    path('post/<int:post_pk>/like/', posts_apis.PostLikeCreateDestroy.as_view(), name='post-like'),
 
-    path('postlike/', apis.PostLikeCreateAPIView.as_view()),
-    path('postlike/<int:pk>/', apis.PostLikeDestroyAPIView.as_view()),
+    path('postlike/', posts_apis.PostLikeCreateAPIView.as_view()),
+    path('postlike/<int:pk>/', posts_apis.PostLikeDestroyAPIView.as_view()),
 ], 'posts')
+urlpatterns_api_members = ([
+    path('auth-token/', members_apis.AuthTokenView.as_view()),
+    path('user/profile/', members_apis.UserDetail.as_view()),
+    path('user/<int:pk>/', members_apis.UserDetail.as_view()),
+    path('user/view/profile/', members_apis.UserDetailAPIView.as_view()),
+    path('user/view/<int:pk>/', members_apis.UserDetailAPIView.as_view()),
+], 'members')
 urlpatterns_api = ([
-    path('posts/', include(urlpatterns_api_posts))
+    path('posts/', include(urlpatterns_api_posts)),
+    path('members/', include(urlpatterns_api_members)),
 ], 'api')
-
 
 urlpatterns = [
     path('', RedirectView.as_view(pattern_name='posts:post-list'), name='index'),

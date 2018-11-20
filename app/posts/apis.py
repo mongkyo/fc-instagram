@@ -1,16 +1,14 @@
 import json
 
-from django.http import HttpResponse, Http404
+from django.http import HttpResponse
 from rest_framework import status, permissions, generics
-from rest_framework.exceptions import NotAuthenticated, APIException
 from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from posts.permissions import IsUser
-from .serializers import PostSerializer, CommentSerializer, PostLikeSerializer
-from .models import HashTag, Post, Comment, PostLike
-
+from .serializers import PostSerializer, PostLikeSerializer
+from .models import HashTag, Post, PostLike
 
 
 class PostList(generics.ListCreateAPIView):

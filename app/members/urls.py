@@ -1,6 +1,6 @@
 from django.urls import path
 
-from . import views
+from . import views, apis
 
 # 중복되는 것을 방지시켜줌
 app_name = 'members'
@@ -13,4 +13,6 @@ urlpatterns = [
     path('signup/', views.signup_view, name='signup'),
     path('profile/', views.profile, name='profile'),
     path('facebook-login/', views.facebook_login, name='facebook-login'),
+    # path('<int:pk>/', apis.UserDetail),
+    # path('profile/', apis.UserDetail),
 ]
