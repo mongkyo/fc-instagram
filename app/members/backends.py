@@ -6,29 +6,13 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 from django.contrib.auth import get_user_model
 
 User = get_user_model()
+API_BASE = 'https://graph.facebook.com/v3.2'
+API_GET_ACCESS_TOKEN = f'{API_BASE}/oauth/access_token?'
+API_ME = f'{API_BASE}/me'
 
 
 class FacebookBackend:
-    def authenticate(self, request, facebook_request_token):
-        api_base = 'https://graph.facebook.com/v3.2'
-        api_get_access_token = f'{api_base}/oauth/access_token?'
-        api_me = f'{api_base}/me'
-        code = request.GET.get('code')
-        params = {
-            'client_id': settings.FACEBOOK_APP_ID,
-            'redirect_uri': 'http://localhost:8000/members/facebook-login/',
-            'client_secret': settings.FACEBOOK_APP_SECRET,
-            'code': code,
-        }
-        response = requests.get(api_get_access_token, params)
-        # # 인수로 전달한 문자열이 'JSON'형식일 것으로 생각
-        # # json.loads는 전달한 문자열이 JSON형식일 경우, 해당 문자열을 parsing해서 파이썬 Object를 리턴함
-        #
-
-        data = response.json()
-        access_token = data['access_token']
-
-        # # access_token을 사용해서 사용자 정보를 가져오기
+    def get_user_by_access_token(self, access_token):
         params = {
             'access_token': access_token,
             'fields': ','.join([
@@ -38,7 +22,7 @@ class FacebookBackend:
                 'picture.type(large)',
             ])
         }
-        response = requests.get(api_me, params)
+        response = requests.get(API_ME, params)
         data = response.json()
 
         facebook_id = data['id']
@@ -74,6 +58,27 @@ class FacebookBackend:
             )
 
         return user
+
+    def authenticate(self, request, facebook_request_token):
+
+        code = request.GET.get('code')
+        params = {
+            'client_id': settings.FACEBOOK_APP_ID,
+            'redirect_uri': 'http://localhost:8000/members/facebook-login/',
+            'client_secret': settings.FACEBOOK_APP_SECRET,
+            'code': code,
+        }
+        response = requests.get(API_GET_ACCESS_TOKEN, params)
+        # # 인수로 전달한 문자열이 'JSON'형식일 것으로 생각
+        # # json.loads는 전달한 문자열이 JSON형식일 경우, 해당 문자열을 parsing해서 파이썬 Object를 리턴함
+
+        data = response.json()
+        access_token = data['access_token']
+
+        # # access_token을 사용해서 사용자 정보를 가져오기
+        data = response.json()
+        access_token = data['access_token']
+        self.get_user_by_access_token(access_token)
 
     def get_user(self, user_id):
         try:

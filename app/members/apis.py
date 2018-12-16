@@ -5,8 +5,10 @@ from rest_framework.authtoken.models import Token
 from rest_framework.exceptions import AuthenticationFailed, NotAuthenticated
 from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
+from rest_framework.templatetags.rest_framework import data
 from rest_framework.views import APIView
 
+from members.backends import FacebookBackend
 from .permissions import IsOwnerOrReadOnly
 from .models import User
 from .serializers import UserSerializer, AuthTokenSerializer
@@ -26,6 +28,39 @@ class AuthTokenView(APIView):
             # -> {'token': <Token key>, 'user': <해당 유저 정보 serializer>}
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class FacebookAuthTokenView(APIView):
+    # URL: /members/api/facebook-auth-token/
+    def post(self, request):
+
+        # 전달받은 토큰(페이스북 access token)값과 유저ID(access_token, user_id)를 사용해서
+        # 정상적인 token인지 검사 후 (access_token으로 받아온 정보의 id와 user_id가 같은지)
+        # DB에 해당 유저가 존재하는지 검사(authenticate)
+        # 있다면 -> 토큰 발급
+        # 없다면 -> 유저 생성 후 토큰 발급
+        #          -> 생성로직은 FacebookBackend참조
+
+        # serializer = FacebookAuthTokenSerializer(data=request.data)
+        # if serializer.is_valid():
+        #     # to_representation() 함수를 Serializer내에 정의
+        #     # -> {'token': <Token key>, 'user': <해당 유저 정보 serializer>}
+        #     return Response(serializer.data)
+        # return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        #
+        facebook_user_id = request.data.get('user_id')
+        access_token = request.data.get('access_token')
+        if User.objects.filter(username=facebook_user_id).exists():
+            user = User.objects.get(username=facebook_user_id)
+        else:
+            user = FacebookBackend.get_user_by_access_token(access_token)
+        token = Token.objects.get_or_create(user=user)[0]
+        data = {
+            'token': token.key,
+            'user': UserSerializer(user).data,
+        }
+        return Response(data)
 
 
 class UserDetailAPIView(APIView):

@@ -60,8 +60,17 @@ ALLOWED_HOSTS = []
 # Auth
 AUTH_USER_MODEL = 'members.User'
 
-# Application definition
+INTERNAL_IPS = [
+    '127.0.0.1',
+]
 
+# django-cors-headers
+CORS_ORIGIN_WHITELIST = (
+    '127.0.0.1',
+    'localhost:3000',
+)
+
+# Application definition
 INSTALLED_APPS = [
     'members.apps.MembersConfig',
     'posts.apps.PostsConfig',
@@ -73,9 +82,11 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
+    'debug_toolbar',
     'django_extensions',
     'rest_framework',
     'rest_framework.authtoken',
+    'corsheaders',
 ]
 
 MIDDLEWARE = [
@@ -87,7 +98,9 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'config.middleware.CORSMiddleware'
+    # 'config.middleware.CORSMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
 ]
 
 ROOT_URLCONF = 'config.urls'

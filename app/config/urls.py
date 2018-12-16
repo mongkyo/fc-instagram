@@ -34,6 +34,7 @@ urlpatterns_api_posts = ([
 ], 'posts')
 urlpatterns_api_members = ([
     path('auth-token/', members_apis.AuthTokenView.as_view()),
+    path('auth-token/facebook-auth-token/', members_apis.FacebookAuthTokenView.as_view()),
     path('user/profile/', members_apis.UserDetail.as_view()),
     path('user/<int:pk>/', members_apis.UserDetail.as_view()),
     path('user/view/profile/', members_apis.UserDetailAPIView.as_view()),
@@ -59,3 +60,8 @@ urlpatterns += static(
     document_root=settings.MEDIA_ROOT,
 )
 
+if settings.DEBUG:
+    import debug_toolbar
+    urlpatterns = [
+        path('__debug__/', include(debug_toolbar.urls)),
+    ] + urlpatterns
